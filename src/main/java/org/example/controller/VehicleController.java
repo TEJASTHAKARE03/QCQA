@@ -1,7 +1,8 @@
 package org.example.controller;
 
 import jakarta.validation.Valid;
-import org.example.model.Vehicle;
+import org.example.dto.CreateVehicleRequest;
+import org.example.dto.VehicleResponse;
 import org.example.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,9 @@ public class VehicleController {
     private VehicleService vehicleService;
 
     @PostMapping
-    public ResponseEntity<?> createVehicle(@Valid @RequestBody Vehicle vehicle) {
+    public ResponseEntity<?> createVehicle(@Valid @RequestBody CreateVehicleRequest request) {
         try {
-            Vehicle savedVehicle = vehicleService.saveVehicle(vehicle);
+            VehicleResponse savedVehicle = vehicleService.saveVehicle(request);
             return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
@@ -28,19 +29,19 @@ public class VehicleController {
     }
 
     @GetMapping
-    public List<Vehicle> getAllVehicles() {
+    public List<VehicleResponse> getAllVehicles() {
         return vehicleService.getAllVehicles();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Vehicle> getVehicleById(@PathVariable Long id) {
+    public ResponseEntity<VehicleResponse> getVehicleById(@PathVariable Long id) {
         return vehicleService.getVehicleById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/by-serial/{serialNumber}")
-    public ResponseEntity<Vehicle> getVehicleBySerialNumber(@PathVariable String serialNumber) {
+    public ResponseEntity<VehicleResponse> getVehicleBySerialNumber(@PathVariable String serialNumber) {
         return vehicleService.getVehicleBySerialNumber(serialNumber)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -1,7 +1,8 @@
 package org.example.controller;
 
 import jakarta.validation.Valid;
-import org.example.model.QcPerson;
+import org.example.dto.CreateQcPersonRequest;
+import org.example.dto.QcPersonResponse;
 import org.example.service.QcPersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,18 +19,18 @@ public class QcPersonController {
     private QcPersonService qcPersonService;
 
     @PostMapping
-    public ResponseEntity<QcPerson> createQcPerson(@Valid @RequestBody QcPerson qcPerson) {
-        QcPerson savedQcPerson = qcPersonService.saveQcPerson(qcPerson);
+    public ResponseEntity<QcPersonResponse> createQcPerson(@Valid @RequestBody CreateQcPersonRequest request) {
+        QcPersonResponse savedQcPerson = qcPersonService.saveQcPerson(request);
         return new ResponseEntity<>(savedQcPerson, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<QcPerson> getAllQcPersons() {
+    public List<QcPersonResponse> getAllQcPersons() {
         return qcPersonService.getAllQcPersons();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<QcPerson> getQcPersonById(@PathVariable Integer id) {
+    public ResponseEntity<QcPersonResponse> getQcPersonById(@PathVariable Integer id) {
         return qcPersonService.getQcPersonById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
