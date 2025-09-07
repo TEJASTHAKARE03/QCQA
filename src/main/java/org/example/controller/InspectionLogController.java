@@ -1,7 +1,9 @@
 package org.example.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.example.model.InspectionLog;
+import org.example.dto.InspectionLogResponse;
+import org.example.dto.CreateInspectionLogRequest;
 import org.example.service.InspectionLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,18 +20,22 @@ public class InspectionLogController {
     private InspectionLogService inspectionLogService;
 
     @PostMapping
-    public ResponseEntity<InspectionLog> createInspectionLog(@Valid @RequestBody InspectionLog inspectionLog) {
-        InspectionLog savedLog = inspectionLogService.saveInspectionLog(inspectionLog);
-        return new ResponseEntity<>(savedLog, HttpStatus.CREATED);
+    public ResponseEntity<?> createInspectionLog(@Valid @RequestBody CreateInspectionLogRequest request) {
+        try {
+            InspectionLogResponse savedLog = inspectionLogService.saveInspectionLog(request);
+            return new ResponseEntity<>(savedLog, HttpStatus.CREATED);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping
-    public List<InspectionLog> getAllInspectionLogs() {
+    public List<InspectionLogResponse> getAllInspectionLogs() {
         return inspectionLogService.getAllInspectionLogs();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<InspectionLog> getInspectionLogById(@PathVariable Long id) {
+    public ResponseEntity<InspectionLogResponse> getInspectionLogById(@PathVariable Long id) {
         return inspectionLogService.getInspectionLogById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
